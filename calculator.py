@@ -30,54 +30,48 @@ class Interperter(object):
         # pointer index to self.text
         self.pos = 0
         self.current_token = None
+        self.current_char = self.text[self.pos]
 
     def error(self):
         raise Exception('Error parsing input string')
 
+    def advance(self):
+        self.pos += 1
+        if self.pos == len(self.text):
+            self.current_char = None
+        else:
+            self.current_char = self.text[self.pos]
+
+    def skip_whitespace(self):
+        while self.current_char is not None and self.current_char.isspace():
+            self.advance()
+
+    def generate_number(self):
+        number_queue = []
+        while self.current_char is not None and self.current_char.isdigit():
+            number_queue.append(self.current_char)
+            self.advance()
+        return int(''.join(number_queue))
+
     # 词法分析，获取Token
     def get_next_token(self):
         text = self.text
-        # 读到最后一个字符结束
-        if self.pos == len(text):
-            return Token(EOF, None)
-
-        current_char = text[self.pos]
-
-        # 处理表达式内部出现的空格
-        if current_char == ' ':
-            for current_char in text[self.pos:]:
-                if current_char == ' ':
-                    self.pos += 1
-                else:
-                    current_char = text[self.pos]
-                    break
-
-        if current_char.isdigit():
-            # 支持多位整型数字
-            number_queue = []
-            for current_char in text[self.pos:]:
-                if current_char.isdigit():
-                    number_queue.append(current_char)
-                    self.pos += 1
-                else:
-                    break
-            number = int(''.join(number_queue))
-
-            token = Token(INTEGER, number)
-            return token
-
-        if current_char == '+':
-            token = Token(PLUS, current_char)
-            self.pos += 1
-            return token
-
-        if current_char == '-':
-            token = Token(MINUS, current_char)
-            self.pos += 1
-            return token
-
-        # cannot parsing input string
-        self.error()
+        while self.current_char is not None:
+            if self.current_char.isspace():
+                self.skip_whitespace()
+                continue
+            if self.current_char.isdigit():
+                number = self.generate_number()
+                return Token(INTEGER, number)
+            if self.current_char == '+':
+                self.advance()
+                return Token(PLUS, self.current_char)
+            if self.current_char == '-':
+                self.advance()
+                return Token(MINUS, self.current_char)
+            # cannot parsing input string
+            self.error()
+        return Token(EOF, None)
 
     def walk(self, token_type):
         if self.current_token.token_type == token_type:
@@ -89,6 +83,7 @@ class Interperter(object):
         '''
         expression: e.g. INTEGER PLUS INTEGER
         '''
+        # 语法分析parsing，识别Token流中的短语
         self.current_token = self.get_next_token()
 
         left = self.current_token
@@ -99,10 +94,13 @@ class Interperter(object):
             self.walk(PLUS)
         elif operator.token_type == MINUS:
             self.walk(MINUS)
+        else:
+            self.error()
 
         right = self.current_token
         self.walk(INTEGER)
 
+        # 解释interpreting，完成语法分析后进行解释
         if operator.token_type == PLUS:
             result = left.token_value + right.token_value
         elif operator.token_type == MINUS:
