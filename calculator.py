@@ -34,16 +34,28 @@ class Interperter(object):
     def error(self):
         raise Exception('Error parsing input string')
 
+    # 词法分析，获取Token
     def get_next_token(self):
         text = self.text
+        # 读到最后一个字符结束
         if self.pos == len(text):
             return Token(EOF, None)
 
         current_char = text[self.pos]
         if current_char.isdigit():
-            token = Token(INTEGER, int(current_char))
-            self.pos += 1
+            # 支持多位整型数字
+            number_queue = []
+            for current_char in text[self.pos:]:
+                if current_char.isdigit():
+                    number_queue.append(current_char)
+                    self.pos += 1
+                else:
+                    break
+            number = int(''.join(number_queue))
+
+            token = Token(INTEGER, number)
             return token
+
         if current_char == '+':
             token = Token(PLUS, current_char)
             self.pos += 1
