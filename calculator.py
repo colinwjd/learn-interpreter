@@ -82,9 +82,8 @@ class Interperter(object):
     def walk(self, token_type):
         if self.current_token.token_type == token_type:
             self.current_token = self.get_next_token()
-            return True
         else:
-            return False
+            self.error()
 
     def calc_expr(self):
         '''
@@ -96,18 +95,18 @@ class Interperter(object):
         self.walk(INTEGER)
 
         operator = self.current_token
-        plus = self.walk(PLUS)
-        minus = self.walk(MINUS)
+        if operator.token_type == PLUS:
+            self.walk(PLUS)
+        elif operator.token_type == MINUS:
+            self.walk(MINUS)
 
         right = self.current_token
         self.walk(INTEGER)
 
-        if plus:
+        if operator.token_type == PLUS:
             result = left.token_value + right.token_value
-        elif minus:
+        elif operator.token_type == MINUS:
             result = left.token_value - right.token_value
-        else:
-            self.error()
         return result
 
 def main():
