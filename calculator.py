@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 
 class Token(object):
     
@@ -26,7 +26,7 @@ class Interperter(object):
     
     def __init__(self, text):
         # string input. e.g. "6+7"
-        self.text = text.replace(' ', '')
+        self.text = text.strip()
         # pointer index to self.text
         self.pos = 0
         self.current_token = None
@@ -42,6 +42,15 @@ class Interperter(object):
             return Token(EOF, None)
 
         current_char = text[self.pos]
+
+        if current_char == ' ':
+            for current_char in text[self.pos:]:
+                if current_char == ' ':
+                    self.pos += 1
+                else:
+                    current_char = text[self.pos]
+                    break
+
         if current_char.isdigit():
             # 支持多位整型数字
             number_queue = []
