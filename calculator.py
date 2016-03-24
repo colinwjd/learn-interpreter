@@ -43,6 +43,7 @@ class Interperter(object):
 
         current_char = text[self.pos]
 
+        # 处理表达式内部出现的空格
         if current_char == ' ':
             for current_char in text[self.pos:]:
                 if current_char == ' ':
@@ -69,18 +70,25 @@ class Interperter(object):
             token = Token(PLUS, current_char)
             self.pos += 1
             return token
+
+        if current_char == '-':
+            token = Token(MINUS, current_char)
+            self.pos += 1
+            return token
+
         # cannot parsing input string
         self.error()
 
     def walk(self, token_type):
         if self.current_token.token_type == token_type:
             self.current_token = self.get_next_token()
+            return True
         else:
-            self.error()
+            return False
 
     def calc_expr(self):
         '''
-        expression: INTEGER PLUS INTEGER
+        expression: e.g. INTEGER PLUS INTEGER
         '''
         self.current_token = self.get_next_token()
 
@@ -88,12 +96,18 @@ class Interperter(object):
         self.walk(INTEGER)
 
         operator = self.current_token
-        self.walk(PLUS)
+        plus = self.walk(PLUS)
+        minus = self.walk(MINUS)
 
         right = self.current_token
         self.walk(INTEGER)
 
-        result = left.token_value + right.token_value
+        if plus:
+            result = left.token_value + right.token_value
+        elif minus:
+            result = left.token_value - right.token_value
+        else:
+            self.error()
         return result
 
 def main():
