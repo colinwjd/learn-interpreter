@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+
 
 class Token(object):
     
@@ -69,6 +70,12 @@ class Interperter(object):
             if self.current_char == '-':
                 self.advance()
                 return Token(MINUS, self.current_char)
+            if self.current_char == '*':
+                self.advance()
+                return Token(MUL, self.current_char)
+            if self.current_char == '/':
+                self.advance()
+                return Token(DIV, self.current_char)
             # cannot parsing input string
             self.error()
         return Token(EOF, None)
@@ -94,6 +101,10 @@ class Interperter(object):
             self.walk(PLUS)
         elif operator.token_type == MINUS:
             self.walk(MINUS)
+        elif operator.token_type == MUL:
+            self.walk(MUL)
+        elif operator.token_type == DIV:
+            self.walk(DIV)
         else:
             self.error()
 
@@ -105,6 +116,10 @@ class Interperter(object):
             result = left.token_value + right.token_value
         elif operator.token_type == MINUS:
             result = left.token_value - right.token_value
+        elif operator.token_type == MUL:
+            result = left.token_value * right.token_value
+        elif operator.token_type == DIV:
+            result = left.token_value / right.token_value
         return result
 
 def main():
