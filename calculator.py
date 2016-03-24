@@ -26,7 +26,7 @@ class Interperter(object):
     
     def __init__(self, text):
         # string input. e.g. "6+7"
-        self.text = text
+        self.text = text.replace(' ', '')
         # pointer index to self.text
         self.pos = 0
         self.current_token = None
