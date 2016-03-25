@@ -86,40 +86,27 @@ class Interperter(object):
         else:
             self.error()
 
+    def term(self):
+        token = self.current_token
+        self.walk(INTEGER)
+        return token.token_value
+
     def calc_expr(self):
         '''
         expression: e.g. INTEGER PLUS INTEGER
         '''
         # 语法分析parsing，识别Token流中的短语
         self.current_token = self.get_next_token()
-
-        left = self.current_token
-        self.walk(INTEGER)
-
-        operator = self.current_token
-        if operator.token_type == PLUS:
-            self.walk(PLUS)
-        elif operator.token_type == MINUS:
-            self.walk(MINUS)
-        elif operator.token_type == MUL:
-            self.walk(MUL)
-        elif operator.token_type == DIV:
-            self.walk(DIV)
-        else:
-            self.error()
-
-        right = self.current_token
-        self.walk(INTEGER)
-
-        # 解释interpreting，完成语法分析后进行解释
-        if operator.token_type == PLUS:
-            result = left.token_value + right.token_value
-        elif operator.token_type == MINUS:
-            result = left.token_value - right.token_value
-        elif operator.token_type == MUL:
-            result = left.token_value * right.token_value
-        elif operator.token_type == DIV:
-            result = left.token_value / right.token_value
+        result = self.term()
+        while self.current_token.token_type in (PLUS, MINUS):
+            if self.current_token.token_type == PLUS:
+                self.walk(PLUS)
+                value = self.term()
+                result = result + value
+            if self.current_token.token_type == MINUS:
+                self.walk(MINUS)
+                value = self.term()
+                result = result - value
         return result
 
 def main():
