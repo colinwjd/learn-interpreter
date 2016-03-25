@@ -27,14 +27,14 @@ class Interperter(object):
     
     def __init__(self, text):
         # string input. e.g. "6+7"
-        self.text = text.strip()
+        self.text = text
         # pointer index to self.text
         self.pos = 0
         self.current_token = None
         self.current_char = self.text[self.pos]
 
     def error(self):
-        raise Exception('Error parsing input string')
+        raise Exception('Invalid syntax')
 
     def advance(self):
         self.pos += 1
