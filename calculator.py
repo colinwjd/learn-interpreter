@@ -56,7 +56,6 @@ class Interperter(object):
 
     # 词法分析，获取Token
     def get_next_token(self):
-        text = self.text
         while self.current_char is not None:
             if self.current_char.isspace():
                 self.skip_whitespace()

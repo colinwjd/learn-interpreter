@@ -40,7 +40,6 @@ class Interperter(object):
         return int(''.join(result))
 
     def get_next_token(self):
-        text = self.text
         while self.current_char is not None:
             if self.current_char.isspace():
                 self.skip_whitespace()
