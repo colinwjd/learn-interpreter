@@ -15,7 +15,7 @@ class Interperter(object):
         self.text = text
         self.current_token = None
         self.index = 0
-        self.current_char = text[self.index]
+        self.current_char = self.text[self.index]
 
     def error(self):
         raise Exception('Syntax Error.')
@@ -40,9 +40,8 @@ class Interperter(object):
         return int(''.join(result))
 
     def get_next_token(self):
-        while True:
-            if self.current_char is None:
-                return Token(EOF, None)
+        text = self.text
+        while self.current_char is not None:
             if self.current_char.isspace():
                 self.skip_whitespace()
                 continue
@@ -58,6 +57,7 @@ class Interperter(object):
                 self.advance()
                 return Token(MINUS, current_char)
             self.error()
+        return Token(EOF, None)
             
     def walk(self, type):
         token = self.current_token
@@ -86,12 +86,17 @@ class Interperter(object):
 
 def main():
     while True:
-        # 获取输入
-        text = input('calc>>>')
-        # 解释text
-        interperter = Interperter(text)
-        result = interperter.calc_expr()
-        print(result)
+        try:
+            # 获取输入
+            text = input('calc>>>')
+        except EOFError:
+            break
+
+        if text:
+            # 解释text
+            interperter = Interperter(text)
+            result = interperter.calc_expr()
+            print(result)
 
 if __name__ == '__main__':
     main()

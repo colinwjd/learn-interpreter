@@ -65,17 +65,21 @@ class Interperter(object):
                 number = self.generate_number()
                 return Token(INTEGER, number)
             if self.current_char == '+':
+                current_char = self.current_char
                 self.advance()
-                return Token(PLUS, self.current_char)
+                return Token(PLUS, current_char)
             if self.current_char == '-':
+                current_char = self.current_char
                 self.advance()
-                return Token(MINUS, self.current_char)
+                return Token(MINUS, current_char)
             if self.current_char == '*':
+                current_char = self.current_char
                 self.advance()
-                return Token(MUL, self.current_char)
+                return Token(MUL, current_char)
             if self.current_char == '/':
+                current_char = self.current_char
                 self.advance()
-                return Token(DIV, self.current_char)
+                return Token(DIV, current_char)
             # cannot parsing input string
             self.error()
         return Token(EOF, None)
