@@ -4,7 +4,7 @@ INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 
 
 
 class Token(object):
-    
+
     def __init__(self, token_type, token_value):
         # token type: INTEGER, PLUS, EOF
         self.token_type = token_type
@@ -19,12 +19,13 @@ class Token(object):
             Token(INTEGER, 7)
         '''
         return 'Token({token_type}, {token_value})'.format(
-            token_type = self.token_type,
-            token_value = repr(self.token_value)
+            token_type=self.token_type,
+            token_value=repr(self.token_value)
         )
 
+
 class Interperter(object):
-    
+
     def __init__(self, text):
         # string input. e.g. "6+7"
         self.text = text
@@ -112,6 +113,7 @@ class Interperter(object):
                 result = result - value
         return result
 
+
 def main():
     while True:
         try:
@@ -126,4 +128,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
