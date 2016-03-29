@@ -24,18 +24,16 @@ class Token(object):
         )
 
 
-class Interperter(object):
+class Lexer(object):
 
     def __init__(self, text):
-        # string input. e.g. "6+7"
         self.text = text
-        # pointer index to self.text
-        self.pos = 0
         self.current_token = None
+        self.pos = 0
         self.current_char = self.text[self.pos]
 
     def error(self):
-        raise Exception('Invalid syntax')
+        raise Exception('Invalid character')
 
     def advance(self):
         self.pos += 1
@@ -55,7 +53,6 @@ class Interperter(object):
             self.advance()
         return int(''.join(number_queue))
 
-    # 词法分析，获取Token
     def get_next_token(self):
         while self.current_char is not None:
             if self.current_char.isspace():
@@ -84,9 +81,19 @@ class Interperter(object):
             self.error()
         return Token(EOF, None)
 
+
+class Interperter(object):
+
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+
+    def error(self):
+        raise Exception('Invalid syntax')
+
     def walk(self, token_type):
         if self.current_token.token_type == token_type:
-            self.current_token = self.get_next_token()
+            self.current_token = self.lexer.get_next_token()
         else:
             self.error()
 
@@ -96,7 +103,6 @@ class Interperter(object):
         return token.token_value
 
     def calc_expr(self):
-        self.current_token = self.get_next_token()
         result = self.factor()
 
         while self.current_token.token_type in (MUL, DIV):
@@ -119,7 +125,8 @@ def main():
             break
 
         if text:
-            interperter = Interperter(text)
+            lexer = Lexer(text)
+            interperter = Interperter(lexer)
             result = interperter.calc_expr()
             print(result)
 
