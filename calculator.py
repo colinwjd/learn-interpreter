@@ -102,7 +102,7 @@ class Interperter(object):
         self.walk(INTEGER)
         return token.token_value
 
-    def calc_expr(self):
+    def term(self):
         result = self.factor()
 
         while self.current_token.token_type in (MUL, DIV):
@@ -112,8 +112,17 @@ class Interperter(object):
             elif self.current_token.token_type == DIV:
                 self.walk(DIV)
                 result /= self.factor()
-            else:
-                self.error()
+        return result
+
+    def expr(self):
+        result = self.term()
+        while self.current_token.token_type in (PLUS, MINUS):
+            if self.current_token.token_type == PLUS:
+                self.walk(PLUS)
+                result += self.term()
+            elif self.current_token.token_type == MINUS:
+                self.walk(MINUS)
+                result -= self.term()
         return result
 
 
@@ -127,7 +136,7 @@ def main():
         if text:
             lexer = Lexer(text)
             interperter = Interperter(lexer)
-            result = interperter.calc_expr()
+            result = interperter.expr()
             print(result)
 
 if __name__ == '__main__':
