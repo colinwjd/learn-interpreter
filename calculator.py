@@ -90,27 +90,24 @@ class Interperter(object):
         else:
             self.error()
 
-    def term(self):
+    def factor(self):
         token = self.current_token
         self.walk(INTEGER)
         return token.token_value
 
     def calc_expr(self):
-        '''
-        expression: e.g. INTEGER PLUS INTEGER
-        '''
-        # 语法分析parsing，识别Token流中的短语
         self.current_token = self.get_next_token()
-        result = self.term()
-        while self.current_token.token_type in (PLUS, MINUS):
-            if self.current_token.token_type == PLUS:
-                self.walk(PLUS)
-                value = self.term()
-                result = result + value
-            if self.current_token.token_type == MINUS:
-                self.walk(MINUS)
-                value = self.term()
-                result = result - value
+        result = self.factor()
+
+        while self.current_token.token_type in (MUL, DIV):
+            if self.current_token.token_type == MUL:
+                self.walk(MUL)
+                result *= self.factor()
+            elif self.current_token.token_type == DIV:
+                self.walk(DIV)
+                result /= self.factor()
+            else:
+                self.error()
         return result
 
 
