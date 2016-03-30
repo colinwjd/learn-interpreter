@@ -23,7 +23,6 @@ class Token(object):
         )
 
 
-# 词法分析器
 class Lexer(object):
 
     def __init__(self, text):
@@ -73,6 +72,25 @@ class Lexer(object):
         return Token(EOF, None)
 
 
+class AbstractSyntaxTree(object):
+    pass
+
+
+class BinaryOperator(AbstractSyntaxTree):
+
+    def __init__(self, left, op, right):
+        self.left = left
+        self.token = self.op = op
+        self.right = right
+
+
+class Number(AbstractSyntaxTree):
+    
+    def __init__(self, token):
+        self.token = token
+        self.value = token.token_value
+
+
 class Parser(object):
 
     def __init__(self, lexer):
@@ -91,22 +109,51 @@ class Parser(object):
             self.error()       
 
     def factor(self):
-        self.walk(INTEGER)
+        '''
+        factor: INTEGER | LPAREN expr RPAREN
+        '''
+        token = self.current_token
+        if token.token_type == INTEGER:
+            self.walk(INTEGER)
+            return Number(token)
+        elif token.token_type == LPAREN:
+            self.walk(LPAREN)
+            node = self.expr()
+            self.walk(RPAREN)
+            return node
+
+    def term(self):
+        '''
+        term: factor ((MUL | DIV) factor)*
+        '''
+        node = self.factor()
+        while self.current_token.token_type in (MUL, DIV):
+            token = self.current_token
+            if token.token_type == MUL:
+                self.walk(MUL)
+            elif token.token_type == DIV:
+                self.walk(DIV)
+            node = BinaryOperator(left=node, op=token, right=self.factor())
+        return node
         
     def expr(self):
-        self.factor()
-        while self.current_token.token_type in (MUL, DIV):
-            if self.current_token.token_type == MUL:
-                self.walk(MUL)
-                self.factor()
-            elif self.current_token.token_type == DIV:
-                self.walk(DIV)
-                self.factor()
-            else:
-                self.error()
+        '''
+        expr: term ((PLUS | MINUS) term)*
+        term: factor ((MUL | DIV) factor)*
+        factor: INTEGER | LPAREN expr RPAREN
+        '''
+        node = self.term()
+        while self.current_token.token_type in (PLUS, MINUS):
+            token = self.current_token
+            if token.token_type == PLUS:
+                self.walk(PLUS)
+            elif token.token_type == MINUS:
+                self.walk(MINUS)
+            node = BinaryOperator(left=node, op=token, right=self.term())
+        return node
 
     def parse(self):
-        self.expr()
+        return self.expr()
 
 
 def main():
