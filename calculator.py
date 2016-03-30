@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = ('INTEGER', 'PLUS', 'MINUS', 
+        'MUL', 'DIV', 'LPAREN', 'RPAREN', 'EOF')
 
 
 class Token(object):
@@ -77,6 +78,14 @@ class Lexer(object):
                 current_char = self.current_char
                 self.advance()
                 return Token(DIV, current_char)
+            if self.current_char == '(':
+                current_char = self.current_char
+                self.advance()
+                return Token(LPAREN, '(')
+            if self.current_char == ')':
+                current_char = self.current_char
+                self.advance()
+                return Token(RPAREN, ')')
             # cannot parsing input string
             self.error()
         return Token(EOF, None)
@@ -99,8 +108,14 @@ class Interperter(object):
 
     def factor(self):
         token = self.current_token
-        self.walk(INTEGER)
-        return token.token_value
+        if token.token_type == INTEGER:
+            self.walk(INTEGER)
+            return token.token_value
+        elif token.token_type == LPAREN:
+            self.walk(LPAREN)
+            middle_result = self.expr()
+            self.walk(RPAREN)
+            return middle_result
 
     def term(self):
         result = self.factor()
