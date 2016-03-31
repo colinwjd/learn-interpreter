@@ -2,7 +2,8 @@
 
 import logging;logging.basicConfig(level=logging.DEBUG)
 
-INTEGER, MUL, DIV, EOF = 'INTEGER', 'MUL', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = ('INTEGER', 'PLUS', 'MINUS', 
+        'MUL', 'DIV', 'LPAREN', 'RPAREN', 'EOF')
 
 class Token(object):
 
@@ -60,6 +61,14 @@ class Lexer(object):
             if self.current_char.isdigit():
                 number = self.generate_number()
                 return Token(INTEGER, number)
+            if self.current_char == '+':
+                current_char = self.current_char
+                self.advance()
+                return Token(PLUS, current_char)
+            if self.current_char == '-':
+                current_char = self.current_char
+                self.advance()
+                return Token(MINUS, current_char)
             if self.current_char == '*':
                 current_char = self.current_char
                 self.advance()
@@ -68,6 +77,15 @@ class Lexer(object):
                 current_char = self.current_char
                 self.advance()
                 return Token(DIV, current_char)
+            if self.current_char == '(':
+                current_char = self.current_char
+                self.advance()
+                return Token(LPAREN, '(')
+            if self.current_char == ')':
+                current_char = self.current_char
+                self.advance()
+                return Token(RPAREN, ')')
+            # cannot parsing input string
             self.error()
         return Token(EOF, None)
 
@@ -154,6 +172,17 @@ class Parser(object):
 
     def parse(self):
         return self.expr()
+
+
+class NodeVisitor(object):
+    
+    def visit(self, node):
+        method_name = 'visit_' + type(node).__name__
+        visitor = getattr(self, method_name, self.generic_visit)
+        return visitor(node)
+
+    def generic_visit(self, node):
+        raise Exception('No visit_{} method'.format(type(node).__name__))
 
 
 def main():
