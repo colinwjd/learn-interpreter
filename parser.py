@@ -115,6 +115,10 @@ class Number(AbstractSyntaxTree):
         self.value = token.token_value
 
 
+# A recursive-descent parser is a top-down parser that uses 
+# a set of recursive procedures to process the input.
+# Top-down reflects the fact that the parser begins by 
+# constructing the top node of the parse tree and then gradually constructs lower nodes.
 class Parser(object):
     '''
     I think it's actually a procedure for constructing an abstract syntax tree.
