@@ -25,6 +25,10 @@ class Token(object):
 
 
 class Lexer(object):
+    '''
+    Get each token one by one from the input text.
+    If there are characters not allowed, it shoud raise lexer exception.
+    '''
 
     def __init__(self, text):
         self.text = text
@@ -112,6 +116,10 @@ class Number(AbstractSyntaxTree):
 
 
 class Parser(object):
+    '''
+    I think it's a procedure for constracting an abstract syntax tree.
+    If something is wrong, it shoud raise an syntax exception.
+    '''
 
     def __init__(self, lexer):
         self.lexer = lexer
@@ -120,6 +128,8 @@ class Parser(object):
     def error(self):
         raise Exception('Invalid syntax')
 
+    # Check token type, if passed, set the current token to next token
+    # if not pass, throw an error
     def walk(self, token_type):
         token = self.current_token
         logging.info(token)
