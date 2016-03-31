@@ -117,7 +117,7 @@ class Number(AbstractSyntaxTree):
 
 class Parser(object):
     '''
-    I think it's a procedure for constracting an abstract syntax tree.
+    I think it's actually a procedure for constructing an abstract syntax tree.
     If something is wrong, it shoud raise an syntax exception.
     '''
 
