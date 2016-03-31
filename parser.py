@@ -90,10 +90,12 @@ class Lexer(object):
         return Token(EOF, None)
 
 
+# Represent for a AST node
 class AbstractSyntaxTree(object):
     pass
 
 
+# Represent for a binary operator e.g. +, -, *, /
 class BinaryOperator(AbstractSyntaxTree):
 
     def __init__(self, left, op, right):
@@ -174,6 +176,8 @@ class Parser(object):
         return self.expr()
 
 
+# Visitor pattern, each node has its own visit logic
+# Like an Interface in Java
 class NodeVisitor(object):
     
     def visit(self, node):
