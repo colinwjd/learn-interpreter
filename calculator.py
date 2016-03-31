@@ -21,6 +21,13 @@ class Interperter(NodeVisitor):
         elif node.op.token_type == DIV:
             return self.visit(node.left) / self.visit(node.right)
 
+    # UnaryOperator node visit logic
+    def visit_UnaryOperator(self, node):
+        if node.op.token_type == PLUS:
+            return self.visit(node.expr)
+        elif node.op.token_type == MINUS:
+            return -self.visit(node.expr)
+
     # Number node visit logic
     def visit_Number(self, node):
         return node.value

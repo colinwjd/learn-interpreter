@@ -99,13 +99,20 @@ class AbstractSyntaxTree(object):
     pass
 
 
-# Represent for a binary operator e.g. +, -, *, /
+# Represent for a binary operator e.g. 1+2, 3-1, 3*3, 8/2
 class BinaryOperator(AbstractSyntaxTree):
 
     def __init__(self, left, op, right):
         self.left = left
         self.token = self.op = op
         self.right = right
+
+
+class UnaryOperator(AbstractSyntaxTree):
+
+    def __init__(self, op, expr):
+        self.token = self.op = op
+        self.expr = expr
 
 
 class Number(AbstractSyntaxTree):
@@ -144,10 +151,18 @@ class Parser(object):
 
     def factor(self):
         '''
-        factor: INTEGER | LPAREN expr RPAREN
+        factor: (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
         '''
         token = self.current_token
-        if token.token_type == INTEGER:
+        if token.token_type == PLUS:
+            self.walk(PLUS)
+            node = UnaryOperator(token, self.factor())
+            return node
+        elif token.token_type == MINUS:
+            self.walk(MINUS)
+            node = UnaryOperator(token, self.factor())
+            return node
+        elif token.token_type == INTEGER:
             self.walk(INTEGER)
             return Number(token)
         elif token.token_type == LPAREN:
@@ -174,7 +189,7 @@ class Parser(object):
         '''
         expr: term ((PLUS | MINUS) term)*
         term: factor ((MUL | DIV) factor)*
-        factor: INTEGER | LPAREN expr RPAREN
+        factor: (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
         '''
         node = self.term()
         while self.current_token.token_type in (PLUS, MINUS):
